@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>توقيتات الآيات | صدقة جارية</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Outfit:wght@300;400;600&family=Scheherazade+New:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/timings.css">
+</head>
+
+<body>
+    <div class="background-decor"></div>
+
+    <div class="container animate-fade">
+        <header class="header">
+            <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-right"></i></a>
+            <h1>توقيتات التلاوة</h1>
+            <p>استكشاف المزامنة الصوتية للآيات</p>
+        </header>
+
+        <!-- Step 1: Reciters List -->
+        <section id="reciters-section" class="view-section">
+            <div class="search-box glass-panel">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="reciter-search" placeholder="ابحث عن قارئ...">
+            </div>
+            <div id="reciters-list" class="grid-container">
+                <div class="loading">جاري تحميل القراء...</div>
+            </div>
+        </section>
+
+        <!-- Step 2: Surah Index -->
+        <section id="surahs-section" class="view-section" style="display: none;">
+            <div class="selection-info glass-panel">
+                <span id="selected-reciter-name"></span>
+                <button onclick="showSection('reciters')" class="change-btn">تغيير القارئ</button>
+            </div>
+            <div id="surahs-list" class="grid-container">
+                <!-- Surahs will be injected here -->
+            </div>
+        </section>
+
+        <!-- Step 3: Timing Results -->
+        <section id="timings-section" class="view-section" style="display: none;">
+            <div class="selection-info glass-panel">
+                <div style="display: flex; flex-direction: column;">
+                    <span id="selected-surah-reciter"></span>
+                    <strong id="selected-surah-name" style="color: var(--accent); font-size: 1.2rem;"></strong>
+                </div>
+                <button onclick="showSection('surahs')" class="change-btn">تغيير السورة</button>
+            </div>
+
+            <div id="timings-results" class="timings-container glass-panel">
+                <div class="loading">جاري جلب التوقيتات...</div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/core.js"></script>
+    <script src="js/timings-logic.js"></script>
+</body>
+
+</html>

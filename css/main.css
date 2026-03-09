@@ -1,0 +1,196 @@
+:root {
+    --primary: #064E3B;
+    --primary-light: #0D9488;
+    --accent: #C5A059;
+    --accent-hover: #A88647;
+    --text-dark: #1F2937;
+    --text-light: #F9FAFB;
+    --glass: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    --font-ui: 'Outfit', 'Inter', sans-serif;
+    --font-quran: 'Scheherazade New', 'Amiri', serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: var(--font-ui);
+    background: linear-gradient(135deg, #064E3B 0%, #022C22 100%);
+    color: var(--text-light);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    background-attachment: fixed;
+}
+
+.glass-panel {
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+}
+
+.container {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(to bottom, #F8F9FA, #C5A059);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.animate-fade {
+    animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: var(--primary);
+    padding: 16px 32px;
+    border-radius: 16px;
+    border: none;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(197, 160, 89, 0.4);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text-light);
+    padding: 16px 32px;
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+}
+
+/* traditional Mushaf Styles */
+.mushaf-header {
+    background: url('https://www.searchtruth.com/images/quran/top_border.png') no-repeat center;
+    background-size: contain;
+    padding: 50px 20px;
+    text-align: center;
+    margin-bottom: 25px;
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+}
+
+.mushaf-surah-title {
+    font-family: var(--font-quran);
+    color: #ffd700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mushaf-bismillah {
+    font-family: var(--font-quran);
+    font-size: 2.2rem;
+    text-align: center;
+    margin: 25px 0;
+    color: white;
+}
+
+.mushaf-page-container {
+    padding: 45px 35px;
+    background: #fffdf5;
+    /* Paper color */
+    color: #1a1a1a;
+    border: 18px solid transparent;
+    border-image: url('https://www.searchtruth.com/images/quran/left_border.png') 30 stretch;
+    border-radius: 4px;
+    text-align: center;
+    line-height: 2.8;
+    word-spacing: 6px;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6);
+    margin: 0 auto;
+    max-width: 100%;
+}
+
+.mushaf-text {
+    font-family: var(--font-quran);
+    font-size: 1.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.mushaf-text:hover {
+    background: rgba(197, 160, 89, 0.15);
+    border-radius: 4px;
+}
+
+.mushaf-ayah-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    background: url('https://upload.wikimedia.org/wikipedia/commons/e/e4/Ayah_symbol.png') no-repeat center;
+    background-size: contain;
+    font-size: 0.95rem;
+    font-family: var(--font-ui);
+    color: #111;
+    font-weight: 800;
+    cursor: pointer;
+    margin: 0 4px;
+    vertical-align: middle;
+}
+
+.mushaf-footer {
+    height: 60px;
+    background: url('https://www.searchtruth.com/images/quran/bottom_border.png') no-repeat center;
+    background-size: contain;
+    margin-top: 25px;
+}
+
+#spiritual-album-img {
+    transition: opacity 0.8s ease-in-out;
+}
+
+#spiritual-view-bg {
+    transition: background-image 1.2s ease-in-out;
+    background-position: center;
+    background-size: cover;
+}

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>صدقة جارية | يوسف الطيب والشيخ منصور</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Outfit:wght@300;400;600;700&family=Scheherazade+New:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Style -->
+    <link rel="stylesheet" href="css/main.css">
+
+    <style>
+        /* Global Player Bar on Home */
+        .player-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            z-index: 1000;
+            display: none;
+            cursor: pointer;
+            animation: slideUp 0.5s ease;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: var(--accent);
+            width: 0%;
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+
+        /* Spiritual Player View (iPhone Style) */
+        .spiritual-view {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: #111;
+            /* Darker grey base */
+            color: white;
+            flex-direction: column;
+            overflow: hidden;
+            animation: fadeInSlight 0.5s ease;
+        }
+
+        .spiritual-bg {
+            position: absolute;
+            inset: 0;
+            background: url('kaaba.png') no-repeat center center;
+            background-size: cover;
+            filter: blur(40px) brightness(0.3);
+            /* Heavy blur for that smooth iOS glass effect */
+            z-index: -1;
+            transition: background 1s ease;
+        }
+
+        .spiritual-close {
+            position: absolute;
+            top: 40px;
+            left: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 10;
+            opacity: 0.8;
+        }
+
+        .spiritual-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 80px 30px 40px 30px;
+            max-width: 500px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Album Art Area */
+        .spiritual-album-art {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .spiritual-album-art:active {
+            transform: scale(0.98);
+        }
+
+        .spiritual-album-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.6);
+        }
+
+        .spiritual-text-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px 20px;
+            text-align: center;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+        }
+
+        .current-ayah-text {
+            font-family: var(--font-quran);
+            font-size: 1.6rem;
+            line-height: 1.5;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+            transition: all 0.5s ease;
+        }
+
+        .current-translation-text {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 10px;
+            font-family: sans-serif;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Track Info */
+        .spiritual-track-info {
+            text-align: right;
+            margin-bottom: 30px;
+        }
+
+        .source-device {
+            font-size: 0.8rem;
+            opacity: 0.6;
+            margin-bottom: 8px;
+            text-align: left;
+            font-family: sans-serif;
+        }
+
+        .spiritual-track-info h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .spiritual-track-info p {
+            font-size: 0.9rem;
+            opacity: 0.6;
+            margin-bottom: 0;
+        }
+
+        /* Progress Area */
+        .spiritual-progress-area {
+            margin-bottom: 40px;
+        }
+
+        /* Controls Area */
+        .spiritual-controls-area {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            direction: ltr;
+            /* iOS players usually have LTR controls even in RTL */
+        }
+
+        .spiritual-controls-area .play-btn {
+            font-size: 3rem;
+        }
+
+        /* Volume Area */
+        .spiritual-volume-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            opacity: 0.6;
+            font-size: 0.8rem;
+            direction: ltr;
+        }
+
+        /* Tafsir Modal Overlay */
+        .spiritual-tafsir-modal {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(15px);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            animation: slideUp 0.3s ease;
+        }
+
+        .tafsir-modal-content {
+            background: #1C1C1E;
+            /* iOS dark modal bg */
+            border-radius: 24px 24px 0 0;
+            padding: 30px 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+            color: white;
+            text-align: right;
+        }
+
+        .tafsir-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tafsir-header button {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        @keyframes fadeInSlight {
+            from {
+                opacity: 0;
+                transform: scale(1.05);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+    <div class="container animate-fade">
+        <!-- Hero Section -->
+        <header style="margin-top: 40px; text-align: center;">
+            <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 24px;">
+                <!-- Image 1: Sheikh Mansour (Generated) -->
+                <div class="hero-image-container glass-panel float-animation"
+                    style="width: 140px; height: 140px; padding: 8px; overflow: hidden; border-radius: 50%;">
+                    <img src="Gemini_Generated_Image_xtff2pxtff2pxtff.png" alt="الشيخ منصور"
+                        style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"
+                        onerror="this.src='https://api.dicebear.com/7.x/initials/svg?seed=Mansour&backgroundColor=064e3b&fontFamily=Amiri'">
+                </div>
+                <!-- Image 2: Youssef Al-Tayeb (Attached) -->
+                <div class="hero-image-container glass-panel float-animation"
+                    style="width: 140px; height: 140px; padding: 8px; overflow: hidden; border-radius: 50%; animation-delay: 0.5s;">
+                    <img src="yousef.jpg" alt="يوسف الطيب"
+                        style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"
+                        onerror="this.src='https://api.dicebear.com/7.x/initials/svg?seed=Youssef&backgroundColor=0D9488&fontFamily=Amiri'">
+                </div>
+            </div>
+
+            <h2 style="font-size: 1.1rem; color: var(--accent); margin-bottom: 8px;">صدقة جارية لروح المرحومين</h2>
+            <h1 style="font-size: 2rem;">يوسف الطيب والشيخ منصور</h1>
+            <p style="opacity: 0.8; font-size: 0.9rem; margin-top: 10px; line-height: 1.6; padding: 0 20px;">
+                "اللهم اغفر لهما وارحمهما وعافهما واعف عنهما وأكرم نزلهما ووسع مدخلهما واجعل قبرهما روضة من رياض الجنة"
+            </p>
+        </header>
+
+        <!-- Main Navigation Grid -->
+        <main style="margin-top: 48px;">
+            <div style="display: grid; gap: 20px;">
+                <a href="quran.html" style="text-decoration: none;">
+                    <div class="glass-panel"
+                        style="padding: 24px; display: flex; align-items: center; gap: 20px; transition: transform 0.2s;">
+                        <div
+                            style="background: var(--accent); width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--primary);">
+                            <i class="fa-solid fa-book-quran"></i>
+                        </div>
+                        <div>
+                            <h3 style="color: var(--text-light); margin-bottom: 4px;">القرآن الكريم</h3>
+                            <p style="color: var(--text-light); opacity: 0.6; font-size: 0.85rem;">قراءة، تفسير، وبحث
+                                متقدم</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-left" style="margin-right: auto; opacity: 0.4;"></i>
+                    </div>
+                </a>
+
+                <a href="audio.html" style="text-decoration: none;">
+                    <div class="glass-panel"
+                        style="padding: 24px; display: flex; align-items: center; gap: 20px; transition: transform 0.2s;">
+                        <div
+                            style="background: var(--primary-light); width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--text-light);">
+                            <i class="fa-solid fa-headphones-simple"></i>
+                        </div>
+                        <div>
+                            <h3 style="color: var(--text-light); margin-bottom: 4px;">المكتبة الصوتية</h3>
+                            <p style="color: var(--text-light); opacity: 0.6; font-size: 0.85rem;">استماع وتحميل تلاوات
+                                مميزة</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-left" style="margin-right: auto; opacity: 0.4;"></i>
+                    </div>
+                </a>
+
+                <div class="glass-panel" style="padding: 20px; margin-top: 20px; text-align: center;">
+                    <p class="arabic-text" style="font-size: 1.1rem; color: var(--accent);">
+                        قَالَ رَسُولُ اللهِ ﷺ: «إِذَا مَاتَ الْإِنْسَانُ انْقَطَعَ عَنْهُ عَمَلُهُ إِلَّا مِنْ
+                        ثَلَاثَةٍ: إِلَّا مِنْ صَدَقَةٍ جَارِيَةٍ، أَوْ عِلْمٍ يُنْتَفَعُ بِهِ، أَوْ وَلَدٍ صَالِحٍ
+                        يَدْعُو لَهُ»
+                    </p>
+                </div>
+            </div>
+        </main>
+
+        <footer style="margin-top: auto; padding: 40px 0 20px; text-align: center; opacity: 0.5; font-size: 0.8rem;">
+            <p>© 2026 تطبيق الصدقة الجارية | نسألكم الدعاء</p>
+        </footer>
+    </div>
+
+    <script src="js/core.js"></script>
+    <script src="js/audio-logic.js"></script>
+
+    <!-- Global Player UI -->
+    <div id="player-bar" class="glass-panel player-bar" onclick="openSpiritualView()">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="flex: 1;">
+                <h4 id="now-playing-title" class="arabic-text" style="font-size: 0.9rem; color: var(--accent);"></h4>
+                <p id="now-playing-reciter" style="font-size: 0.7rem; opacity: 0.7;"></p>
+            </div>
+            <button onclick="event.stopPropagation(); togglePlay()" id="master-play-btn" class="control-btn"
+                style="background: var(--accent); color: var(--primary); border: none; width: 40px; height: 40px; border-radius: 50%;">
+                <i class="fa-solid fa-play"></i>
+            </button>
+        </div>
+        <div class="progress-container" id="progress-container"
+            style="height: 4px; background: rgba(255,255,255,0.1); margin-top: 10px; border-radius: 2px;">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- Spiritual Fullscreen Player -->
+    <div id="spiritual-view" class="spiritual-view">
+        <div class="spiritual-bg" id="spiritual-view-bg"></div>
+        <button class="spiritual-close" onclick="closeSpiritualView()">
+            <i class="fa-solid fa-chevron-down"></i>
+        </button>
+
+        <div class="spiritual-content animate-fade">
+            <!-- Album Art Area (Click -> Pause & Tafsir) -->
+            <div class="spiritual-album-art" onclick="handleVerseClick()">
+                <img src="kaaba.png" id="spiritual-album-img" class="spiritual-album-img" alt="Album Art">
+
+                <div class="spiritual-text-overlay">
+                    <div id="spiritual-ayah-text" class="current-ayah-text">ابحث في آيات الله...</div>
+                    <div id="spiritual-translation-text" class="current-translation-text">اضغط هنا لقراءة التفسير</div>
+                </div>
+            </div>
+
+            <!-- Track Info -->
+            <div class="spiritual-track-info">
+                <p class="source-device"><i class="fa-brands fa-apple"></i> iPhone</p>
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; flex-direction: row-reverse;">
+                    <div>
+                        <h3 id="spiritual-surah-name" class="arabic-text">سورة</h3>
+                        <p id="spiritual-track-desc" class="arabic-text">إدارة الملفات - ملفاتي</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Area -->
+            <div class="spiritual-progress-area">
+                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; opacity: 0.7; margin-bottom: 8px; direction: ltr;"
+                    class="sans-serif">
+                    <span id="spiritual-current-time">0:00</span>
+                    <span id="spiritual-duration-time">-0:00</span>
+                </div>
+                <div class="progress-container" id="spiritual-progress-container"
+                    style="background: rgba(255,255,255,0.2); height: 5px; border-radius: 2.5px; cursor: pointer;">
+                    <div class="progress-bar" id="spiritual-progress-bar"
+                        style="background: white; height: 100%; border-radius: 2.5px; position: relative;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls Area -->
+            <div class="spiritual-controls-area">
+                <i class="fa-solid fa-backward-step control-btn" onclick="playPrevSurah()"></i>
+                <i class="fa-solid fa-play play-btn control-btn" id="spiritual-play-btn-icon"
+                    onclick="togglePlay()"></i>
+                <i class="fa-solid fa-forward-step control-btn" onclick="playNextSurah()"></i>
+            </div>
+
+            <!-- Volume Area -->
+            <div class="spiritual-volume-area">
+                <i class="fa-solid fa-volume-off" style="font-size: 0.7rem;"></i>
+                <div class="progress-container"
+                    style="background: rgba(255,255,255,0.2); height: 4px; border-radius: 2px; flex:1;">
+                    <div class="progress-bar" style="background: white; width: 50%;"></div>
+                </div>
+                <i class="fa-solid fa-volume-high" style="font-size: 0.9rem;"></i>
+            </div>
+        </div>
+
+        <!-- Tafsir Modal (Hidden by Default) -->
+        <div id="spiritual-tafsir-modal" class="spiritual-tafsir-modal" style="display: none;">
+            <div class="tafsir-modal-content">
+                <div class="tafsir-header">
+                    <h4 style="font-family: var(--font-quran); font-size: 1.5rem; color: var(--accent);">تفسير الآية
+                    </h4>
+                    <button onclick="closeSpiritualTafsirModal()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="tafsir-body">
+                    <p id="spiritual-tafsir-text" class="arabic-text" style="font-size: 1.2rem; line-height: 2;">اختر
+                        سورة للاستماع</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

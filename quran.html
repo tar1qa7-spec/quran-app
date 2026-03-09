@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>القرآن الكريم | صدقة جارية</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Outfit:wght@300;400;600;700&family=Scheherazade+New:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .search-box {
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            padding: 15px 50px 15px 20px;
+            border-radius: 15px;
+            color: white;
+            font-family: var(--font-ui);
+            font-size: 1rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.6;
+        }
+
+        .surah-card {
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .surah-number {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            color: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .reader-container {
+            display: none;
+            padding-bottom: 40px;
+        }
+
+        /* Modal Style */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+            border-radius: 28px;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .nav-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .index-tab.active {
+            background: var(--accent) !important;
+            color: var(--primary) !important;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container animate-fade">
+        <!-- Navigation Header -->
+        <div class="nav-header">
+            <a href="index.html" style="color: white; font-size: 1.2rem;"><i class="fa-solid fa-arrow-right"></i></a>
+            <h2 id="page-title">الفهرس</h2>
+        </div>
+
+        <!-- Index View -->
+        <div id="index-view">
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button class="index-tab active" data-view="surahs"
+                    style="flex:1; padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--glass); color: white; cursor: pointer;">السور</button>
+                <button class="index-tab" data-view="juz"
+                    style="flex:1; padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--glass); color: white; cursor: pointer;">الأجزاء</button>
+                <button class="index-tab" data-view="hizb"
+                    style="flex:1; padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--glass); color: white; cursor: pointer;">الأحزاب</button>
+            </div>
+
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="surah-search" class="search-input" placeholder="ابحث عن سورة...">
+            </div>
+
+            <div id="loading-index" class="loading-spinner">
+                <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: var(--accent);"></i>
+                <p style="margin-top: 15px; opacity: 0.8;">جاري تحميل الفهرس...</p>
+            </div>
+
+            <div id="surah-list">
+                <!-- Surahs Injection -->
+            </div>
+        </div>
+
+        <!-- Reader View (Mushaf Style) -->
+        <div id="reader-view" class="reader-container">
+            <div id="ayah-list">
+                <!-- Mushaf Content Injection -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Tafsir Modal -->
+    <div id="tafsir-modal" class="modal">
+        <div class="modal-content glass-panel">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px;">
+                <h3 id="tafsir-title" class="arabic-text" style="color: var(--accent);">التفسير</h3>
+                <button onclick="closeModal()"
+                    style="background: var(--glass); border: none; color: white; width: 35px; height: 35px; border-radius: 50%; cursor: pointer;"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p id="tafsir-text" class="arabic-text"
+                style="line-height: 2; text-align: justify; font-size: 1.1rem; max-height: 380px; overflow-y: auto; padding-right: 10px;">
+            </p>
+        </div>
+    </div>
+
+    <!-- Ayah Options Modal (The requested bottom sheet) -->
+    <div id="ayah-options-modal" class="modal">
+        <div class="modal-content glass-panel" style="text-align: center; border-bottom: 5px solid var(--accent);">
+            <h3 id="ayah-modal-title" class="arabic-text"
+                style="margin-bottom: 30px; font-size: 1.8rem; color: var(--accent);">الآية</h3>
+            <div style="display: flex; flex-direction: column; gap: 18px;">
+                <button id="btn-play-voice" onclick="playAyahVoice()" class="btn-primary"
+                    style="background: #0D9488; color: white;">
+                    <i class="fa-solid fa-headphones-simple"></i> استماع للآية بصوت العفاسي
+                </button>
+                <button onclick="showTafsirForSelected()" class="btn-primary"
+                    style="background: var(--accent); color: var(--primary);">
+                    <i class="fa-solid fa-book-open"></i> عرض التفسير (الميسر)
+                </button>
+                <button onclick="closeAyahOptions()" class="btn-secondary"
+                    style="margin-top: 10px; border-color: rgba(255,255,255,0.2);">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/core.js"></script>
+    <script src="js/quran-logic.js"></script>
+</body>
+
+</html>

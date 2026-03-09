@@ -1,0 +1,129 @@
+/* Timings Page Styles */
+
+.view-section {
+    margin-top: 20px;
+    animation: slideUp 0.5s ease-out;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    margin-bottom: 25px;
+    border-radius: 15px;
+}
+
+.search-box input {
+    background: none;
+    border: none;
+    color: white;
+    margin-right: 15px;
+    width: 100%;
+    font-size: 1rem;
+    outline: none;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+    padding-bottom: 50px;
+}
+
+.selection-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    margin-bottom: 25px;
+    border-radius: 15px;
+}
+
+.change-btn {
+    background: var(--accent);
+    color: var(--primary);
+    border: none;
+    padding: 8px 15px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.reciter-card,
+.surah-card {
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.reciter-card:hover,
+.surah-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+}
+
+.reciter-card i,
+.surah-card i {
+    font-size: 1.5rem;
+    color: var(--accent);
+    margin-bottom: 10px;
+}
+
+.timings-container {
+    padding: 25px;
+    min-height: 400px;
+}
+
+.timing-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 100px 100px;
+    padding: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    margin-bottom: 8px;
+    border-radius: 10px;
+}
+
+.timing-header {
+    font-weight: bold;
+    color: var(--accent);
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.timing-row span {
+    font-size: 0.9rem;
+}
+
+.loading {
+    text-align: center;
+    padding: 50px;
+    color: var(--accent);
+    font-style: italic;
+}
+
+@media (max-width: 600px) {
+    .timing-row {
+        grid-template-columns: 50px 1fr 60px 60px;
+        font-size: 0.8rem;
+        padding: 10px 5px;
+    }
+
+    .grid-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -1,0 +1,36 @@
+{
+    "reciter": "Al-Fatih_Al-Zubair",
+    "surah": 1,
+    "ayahs": [
+        {
+            "ayah": 1,
+            "start": 1.833,
+            "end": 7.163
+        },
+        {
+            "ayah": 2,
+            "start": 8.32,
+            "end": 12.644
+        },
+        {
+            "ayah": 3,
+            "start": 13.789,
+            "end": 24.641
+        },
+        {
+            "ayah": 4,
+            "start": 25.677,
+            "end": 33.45
+        },
+        {
+            "ayah": 5,
+            "start": 34.537,
+            "end": 38.117
+        },
+        {
+            "ayah": 6,
+            "start": 39.149,
+            "end": 48.328
+        }
+    ]
+}

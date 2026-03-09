@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>المكتبة الصوتية | صدقة جارية</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Outfit:wght@300;400;600;700&family=Scheherazade+New:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .reciter-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .reciter-card:active {
+            transform: scale(0.97);
+        }
+
+        .reciter-img {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .surah-audio-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        #surah-list-view {
+            display: none;
+            padding-bottom: 130px;
+        }
+
+        .player-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 15px 20px;
+            display: none;
+            cursor: pointer;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 3px;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.3s linear;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.6rem;
+            cursor: pointer;
+        }
+
+        .play-btn {
+            width: 55px;
+            height: 55px;
+            background: var(--accent);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            border: none;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* OFFLINE BANNER */
+        #offline-banner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #c0392b;
+            color: white;
+            text-align: center;
+            padding: 12px 20px;
+            z-index: 9998;
+            font-size: 0.9rem;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        #offline-banner button {
+            background: white;
+            color: #c0392b;
+            border: none;
+            padding: 5px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* ===== SPIRITUAL VIEW ===== */
+        .spiritual-view {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            color: white;
+            flex-direction: column;
+            overflow: hidden;
+            animation: fadeInSlight 0.4s ease;
+        }
+
+        .spiritual-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-slide {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            filter: blur(38px) brightness(0.22);
+            animation: kenburns 20s ease-in-out infinite alternate;
+        }
+
+        .bg-slide.active {
+            opacity: 1;
+        }
+
+        @keyframes kenburns {
+            0% {
+                transform: scale(1.1) translate(0, 0);
+            }
+
+            100% {
+                transform: scale(1.28) translate(-20px, -12px);
+            }
+        }
+
+        .spiritual-close {
+            position: absolute;
+            top: 40px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            z-index: 10;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .spiritual-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 75px 28px 28px 28px;
+            max-width: 500px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+            z-index: 5;
+            overflow-y: auto;
+        }
+
+        .spiritual-album-art {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1/1;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+            margin-bottom: 22px;
+            flex-shrink: 0;
+        }
+
+        .spiritual-album-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.62);
+            transition: opacity 0.6s ease-in-out;
+        }
+
+        .spiritual-text-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 22px 16px;
+            text-align: center;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.88), transparent);
+        }
+
+        .btn-fullscreen-art {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: white;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            z-index: 5;
+            transition: background 0.2s;
+        }
+
+        .btn-fullscreen-art:hover {
+            background: rgba(0, 0, 0, 0.75);
+        }
+
+        .current-ayah-text {
+            font-family: var(--font-quran);
+            font-size: 1.45rem;
+            line-height: 1.7;
+            color: white;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+            transition: opacity 0.4s ease;
+        }
+
+        .current-translation-text {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            margin-top: 7px;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.8);
+        }
+
+        .spiritual-track-info {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .source-device {
+            font-size: 0.75rem;
+            opacity: 0.55;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        .spiritual-track-info h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .spiritual-track-info p {
+            font-size: 0.82rem;
+            opacity: 0.55;
+        }
+
+        .spiritual-progress-area {
+            margin-bottom: 30px;
+        }
+
+        .spiritual-controls-area {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 2rem;
+            margin-bottom: 22px;
+            direction: ltr;
+        }
+
+        .spiritual-controls-area .play-btn {
+            width: 65px;
+            height: 65px;
+            font-size: 1.5rem;
+        }
+
+        .spiritual-volume-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0.55;
+            direction: ltr;
+        }
+
+        /* TAFSIR BOTTOM SHEET */
+        .spiritual-tafsir-modal {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(12px);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            animation: slideUp 0.3s ease;
+        }
+
+        .tafsir-modal-content {
+            background: #1C1C1E;
+            border-radius: 24px 24px 0 0;
+            padding: 28px 20px;
+            max-height: 75vh;
+            overflow-y: auto;
+            color: white;
+            text-align: right;
+        }
+
+        .tafsir-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tafsir-header button {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* ===== FULLSCREEN VIEWER ===== */
+        #fullscreen-viewer {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #000;
+            flex-direction: column;
+            animation: fadeInSlight 0.3s ease;
+        }
+
+        #fullscreen-viewer.active {
+            display: flex;
+        }
+
+        /* Background image in fullscreen */
+        #fs-bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.4);
+            transition: background-image 0.8s ease;
+        }
+
+        #fs-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.55);
+            transition: opacity 0.6s ease;
+            position: absolute;
+            inset: 0;
+        }
+
+        /* Top bar */
+        #fs-topbar {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 48px 20px 16px;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent);
+        }
+
+        #fs-close {
+            background: rgba(255, 255, 255, 0.18);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+        }
+
+        #fs-surah-title {
+            font-family: var(--font-quran);
+            font-size: 1.3rem;
+            color: var(--accent);
+            text-align: center;
+            flex: 1;
+        }
+
+        /* Ayah text in fullscreen */
+        #fs-ayah-container {
+            position: relative;
+            z-index: 10;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 24px;
+        }
+
+        #fs-ayah-text {
+            font-family: var(--font-quran);
+            font-size: 2.2rem;
+            line-height: 2;
+            color: white;
+            text-align: center;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 1), 0 0 60px rgba(0, 0, 0, 0.9);
+            transition: opacity 0.4s ease;
+            direction: rtl;
+        }
+
+        /* Bottom controls in fullscreen */
+        #fs-controls {
+            position: relative;
+            z-index: 10;
+            padding: 20px 28px 50px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
+        }
+
+        #fs-progress-wrap {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            opacity: 0.65;
+            margin-bottom: 8px;
+            direction: ltr;
+        }
+
+        .fs-progress-bar-container {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            margin-bottom: 28px;
+            cursor: pointer;
+        }
+
+        #fs-progress-bar {
+            height: 100%;
+            background: white;
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.3s linear;
+        }
+
+        #fs-btn-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            direction: ltr;
+        }
+
+        .fs-ctrl-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2.2rem;
+            cursor: pointer;
+            opacity: 0.9;
+        }
+
+        #fs-play-btn {
+            width: 68px;
+            height: 68px;
+            background: var(--accent);
+            color: var(--primary);
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(197, 160, 89, 0.5);
+        }
+
+        .fs-tafsir-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-family: var(--font-quran);
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        /* Tafsir overlay inside fullscreen */
+        #fs-tafsir-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            z-index: 20;
+            background: rgba(0, 0, 0, 0.82);
+            backdrop-filter: blur(15px);
+            flex-direction: column;
+            justify-content: flex-end;
+            animation: slideUp 0.3s ease;
+        }
+
+        #fs-tafsir-overlay.active {
+            display: flex;
+        }
+
+        .fs-tafsir-sheet {
+            background: #1a1a1c;
+            border-radius: 24px 24px 0 0;
+            padding: 28px 22px 50px;
+            max-height: 70vh;
+            overflow-y: auto;
+            color: white;
+            text-align: right;
+        }
+
+        @keyframes fadeInSlight {
+            from {
+                opacity: 0;
+                transform: scale(1.03)
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1)
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%)
+            }
+
+            to {
+                transform: translateY(0)
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Offline Banner -->
+    <div id="offline-banner">
+        <i class="fa-solid fa-wifi-slash"></i>
+        <span>لا يوجد اتصال بالإنترنت</span>
+        <button onclick="location.reload()"><i class="fa-solid fa-rotate-right"></i> إعادة تحميل</button>
+    </div>
+
+    <div class="container animate-fade" style="padding-top:20px;">
+        <div style="display:flex; align-items:center; gap:15px; margin-bottom:30px;">
+            <a href="index.html" style="color:white; font-size:1.2rem;"><i class="fa-solid fa-arrow-right"></i></a>
+            <h2 id="audio-title">القراء والمنشدين</h2>
+        </div>
+
+        <div id="reciters-view">
+            <div class="glass-panel reciter-card" onclick="loadReciter('noreen')">
+                <img src="norin.jfif" class="reciter-img"
+                    onerror="this.src='https://api.dicebear.com/7.x/initials/svg?seed=N&backgroundColor=064e3b'">
+                <div style="flex:1;">
+                    <h3 class="arabic-text">نورين محمد صديق</h3>
+                    <p style="font-size:0.8rem;opacity:0.6;">تلاوات خاشعة برواية الدوري</p>
+                </div>
+                <button onclick="event.stopPropagation(); openDownloadModal('noreen', 'نورين محمد صديق')"
+                    title="تحميل القرآن كاملاً بدون إنترنت"
+                    style="background:none;border:none;color:var(--accent);font-size:1.2rem;cursor:pointer;padding:8px;">
+                    <i class="fa-solid fa-download"></i>
+                </button>
+            </div>
+            <div class="glass-panel reciter-card" onclick="loadReciter('alzain')">
+                <img src="elzain.jfif" class="reciter-img"
+                    onerror="this.src='https://api.dicebear.com/7.x/initials/svg?seed=Z&backgroundColor=064e3b'">
+                <div style="flex:1;">
+                    <h3 class="arabic-text">الزين محمد أحمد</h3>
+                    <p style="font-size:0.8rem;opacity:0.6;">تلاوات مميزة برواية حفص</p>
+                </div>
+                <button onclick="event.stopPropagation(); openDownloadModal('alzain', 'الزين محمد أحمد')"
+                    title="تحميل القرآن كاملاً بدون إنترنت"
+                    style="background:none;border:none;color:var(--accent);font-size:1.2rem;cursor:pointer;padding:8px;">
+                    <i class="fa-solid fa-download"></i>
+                </button>
+            </div>
+            <div class="glass-panel reciter-card" onclick="loadReciter('alfateh')">
+                <img src="mohmed.jfif" class="reciter-img"
+                    onerror="this.src='https://api.dicebear.com/7.x/initials/svg?seed=F&backgroundColor=064e3b'">
+                <div style="flex:1;">
+                    <h3 class="arabic-text">الفاتح محمد عثمان الزبير</h3>
+                    <p style="font-size:0.8rem;opacity:0.6;">تلاوات نادرة ومميزة</p>
+                </div>
+                <button onclick="event.stopPropagation(); openDownloadModal('alfateh', 'الفاتح محمد عثمان الزبير')"
+                    title="تحميل القرآن كاملاً بدون إنترنت"
+                    style="background:none;border:none;color:var(--accent);font-size:1.2rem;cursor:pointer;padding:8px;">
+                    <i class="fa-solid fa-download"></i>
+                </button>
+            </div>
+            <div style="margin-top:25px; text-align:center;">
+                <button id="btn-more-reciters" class="btn-secondary" onclick="fetchMoreReciters()"
+                    style="background:var(--glass);border:1px solid var(--glass-border);color:white;padding:14px 24px;border-radius:16px;cursor:pointer;width:100%;font-size:1rem;">
+                    <i class="fa-solid fa-list-ul"></i> المزيد من القراء والروايات
+                </button>
+            </div>
+            <div id="extra-reciters-list" style="margin-top:20px;display:none;"></div>
+        </div>
+
+        <!-- Surah List -->
+        <div id="surah-list-view">
+            <div id="reciter-banner" class="glass-panel"
+                style="padding:18px 20px;margin-bottom:20px;text-align:center;position:relative;">
+                <button
+                    onclick="document.getElementById('reciters-view').style.display='block';document.getElementById('surah-list-view').style.display='none';document.getElementById('audio-title').innerText='القراء والمنشدين';"
+                    style="position:absolute;right:15px;top:50%;transform:translateY(-50%);background:var(--glass);border:none;color:white;cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+                <h3 id="current-reciter-name" class="arabic-text" style="font-size:1.3rem;color:var(--accent);"></h3>
+            </div>
+            <div id="audio-items-container"></div>
+        </div>
+    </div>
+
+    <!-- Mini Player -->
+    <div id="player-bar" class="glass-panel player-bar" onclick="openSpiritualView()">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="flex:1;">
+                <h4 id="now-playing-title" class="arabic-text" style="font-size:0.9rem;color:var(--accent);"></h4>
+                <p id="now-playing-reciter" style="font-size:0.72rem;opacity:0.65;"></p>
+            </div>
+            <button onclick="event.stopPropagation();togglePlay()" id="master-play-btn" class="play-btn">
+                <i class="fa-solid fa-play"></i>
+            </button>
+        </div>
+        <div class="progress-container" id="progress-container" onclick="event.stopPropagation()">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.68rem;opacity:0.5;">
+            <span id="current-time">00:00</span><span id="duration-time">00:00</span>
+        </div>
+    </div>
+
+    <!-- Spiritual Player -->
+    <div id="spiritual-view" class="spiritual-view">
+        <div class="spiritual-bg" id="spiritual-bg-container"></div>
+        <button class="spiritual-close" onclick="closeSpiritualView()"><i class="fa-solid fa-chevron-down"></i></button>
+        <div class="spiritual-content animate-fade">
+            <div class="spiritual-album-art">
+                <img src="kaaba.png" id="spiritual-album-img" class="spiritual-album-img" alt="Album Art"
+                    onerror="this.src='img kabba/Kaaba masjid Al haram.jfif'">
+                <button class="btn-fullscreen-art" onclick="openFullscreenViewer()" title="ملء الشاشة">
+                    <i class="fa-solid fa-expand"></i>
+                </button>
+                <div class="spiritual-text-overlay" onclick="handleVerseClick()">
+                    <div id="spiritual-ayah-text" class="current-ayah-text">ابحث في آيات الله...</div>
+                    <div id="spiritual-translation-text" class="current-translation-text">اضغط للتفسير</div>
+                </div>
+            </div>
+            <div class="spiritual-track-info">
+                <p class="source-device"><i class="fa-brands fa-apple"></i> iPhone</p>
+                <div
+                    style="display:flex;justify-content:space-between;align-items:flex-start;flex-direction:row-reverse;">
+                    <div>
+                        <h3 id="spiritual-surah-name" class="arabic-text">سورة</h3>
+                        <p id="spiritual-track-desc" class="arabic-text">القارئ</p>
+                    </div>
+                </div>
+            </div>
+            <div class="spiritual-progress-area">
+                <div
+                    style="display:flex;justify-content:space-between;font-size:0.78rem;opacity:0.65;margin-bottom:8px;direction:ltr;">
+                    <span id="spiritual-current-time">0:00</span>
+                    <span id="spiritual-duration-time">-0:00</span>
+                </div>
+                <div class="progress-container" id="spiritual-progress-container"
+                    style="background:rgba(255,255,255,0.2);height:5px;cursor:pointer;" onclick="seekAudio(event,this)">
+                    <div class="progress-bar" id="spiritual-progress-bar" style="background:white;height:100%;"></div>
+                </div>
+            </div>
+            <div class="spiritual-controls-area">
+                <i class="fa-solid fa-backward-step control-btn" onclick="playPrevSurah()"></i>
+                <button class="play-btn" id="spiritual-play-btn" onclick="togglePlay()">
+                    <i class="fa-solid fa-play" id="spiritual-play-btn-icon"></i>
+                </button>
+                <i class="fa-solid fa-forward-step control-btn" onclick="playNextSurah()"></i>
+            </div>
+            <div class="spiritual-volume-area">
+                <i class="fa-solid fa-volume-off" style="font-size:0.75rem;"></i>
+                <div class="progress-container" style="background:rgba(255,255,255,0.2);height:4px;flex:1;">
+                    <div class="progress-bar" style="background:white;width:80%;"></div>
+                </div>
+                <i class="fa-solid fa-volume-high" style="font-size:0.85rem;"></i>
+            </div>
+        </div>
+        <!-- Tafsir Sheet -->
+        <div id="spiritual-tafsir-modal" class="spiritual-tafsir-modal" style="display:none;">
+            <div class="tafsir-modal-content">
+                <div class="tafsir-header">
+                    <h4 style="font-family:var(--font-quran);font-size:1.4rem;color:var(--accent);">تفسير الآية</h4>
+                    <button onclick="closeSpiritualTafsirModal()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <p id="spiritual-tafsir-text" class="arabic-text" style="font-size:1.1rem;line-height:2;">اختر سورة
+                    للاستماع</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FULLSCREEN VIEWER ===== -->
+    <div id="fullscreen-viewer">
+        <!-- Blurred background -->
+        <div id="fs-bg"></div>
+        <!-- Main image -->
+        <img id="fs-img" src="" alt="الكعبة">
+
+        <!-- Top bar -->
+        <div id="fs-topbar">
+            <button id="fs-close" onclick="closeFullscreenViewer()"><i class="fa-solid fa-compress"></i></button>
+            <span id="fs-surah-title">سورة</span>
+            <div style="width:40px;"></div>
+        </div>
+
+        <!-- Ayah text center -->
+        <div id="fs-ayah-container">
+            <div id="fs-ayah-text">ابحث في آيات الله...</div>
+        </div>
+
+        <!-- Controls bottom -->
+        <div id="fs-controls">
+            <div id="fs-progress-wrap">
+                <span id="fs-current-time">0:00</span>
+                <span id="fs-duration-time">-0:00</span>
+            </div>
+            <div class="fs-progress-bar-container" onclick="seekAudio(event, this)">
+                <div id="fs-progress-bar"></div>
+            </div>
+            <div id="fs-btn-row">
+                <i class="fa-solid fa-backward-step fs-ctrl-btn" onclick="playPrevSurah()"></i>
+                <button id="fs-play-btn" onclick="togglePlay()">
+                    <i class="fa-solid fa-play" id="fs-play-icon"></i>
+                </button>
+                <i class="fa-solid fa-forward-step fs-ctrl-btn" onclick="playNextSurah()"></i>
+            </div>
+            <button class="fs-tafsir-btn" onclick="openFsTafsir()">
+                <i class="fa-solid fa-book-open"></i> عرض تفسير الآية
+            </button>
+        </div>
+
+        <!-- Tafsir overlay inside fullscreen -->
+        <div id="fs-tafsir-overlay">
+            <div class="fs-tafsir-sheet">
+                <div class="tafsir-header">
+                    <h4 style="font-family:var(--font-quran);font-size:1.4rem;color:var(--accent);">تفسير الآية</h4>
+                    <button onclick="closeFsTafsir()"
+                        style="background:rgba(255,255,255,0.1);border:none;color:white;width:30px;height:30px;border-radius:50%;cursor:pointer;"><i
+                            class="fa-solid fa-xmark"></i></button>
+                </div>
+                <p id="fs-tafsir-text" class="arabic-text" style="font-size:1.1rem;line-height:2;">جاري التحميل...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== DOWNLOAD MODAL ===== -->
+    <div id="download-modal"
+        style="display:none; position:fixed; inset:0; z-index:5000; background:rgba(0,0,0,0.8); backdrop-filter:blur(10px); align-items:flex-end; justify-content:center;">
+        <div
+            style="background:#1C1C1E; border-radius:24px 24px 0 0; padding:28px 22px 50px; width:100%; max-width:500px; max-height:90vh; overflow-y:auto; color:white; text-align:right; animation: slideUp 0.3s ease;">
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:16px;">
+                <h3 id="dl-modal-title" class="arabic-text" style="font-size:1.3rem; color:var(--accent);">تحميل التلاوة
+                </h3>
+                <button onclick="closeDownloadModal()"
+                    style="background:rgba(255,255,255,0.1);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Options -->
+            <div style="display:flex; flex-direction:column; gap:14px; margin-bottom:24px;">
+                <button onclick="startDownloadAll()" id="dl-btn-all"
+                    style="background:var(--accent);color:var(--primary);padding:16px;border-radius:16px;border:none;font-size:1rem;cursor:pointer;font-family:var(--font-quran);display:flex;align-items:center;justify-content:center;gap:10px;">
+                    <i class="fa-solid fa-book-quran"></i> تحميل القرآن كاملاً (114 سورة)
+                </button>
+                <div style="text-align:center; opacity:0.5; font-size:0.85rem;">— أو —</div>
+                <div>
+                    <p style="font-size:0.9rem; opacity:0.8; margin-bottom:10px;">تحميل سورة واحدة:</p>
+                    <select id="dl-surah-select"
+                        style="width:100%; background:#2a2a2e; color:white; border:1px solid rgba(255,255,255,0.2); padding:12px; border-radius:12px; font-size:1rem; font-family:var(--font-quran); direction:rtl;">
+                    </select>
+                    <button onclick="startDownloadOne()" id="dl-btn-one"
+                        style="margin-top:12px; background:rgba(255,255,255,0.1);color:white;padding:14px;border-radius:16px;border:1px solid rgba(255,255,255,0.2);font-size:0.95rem;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;">
+                        <i class="fa-solid fa-download"></i> تحميل السورة المختارة
+                    </button>
+                </div>
+            </div>
+
+            <!-- Progress -->
+            <div id="dl-progress-section" style="display:none;">
+                <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:8px;">
+                    <span id="dl-progress-label" style="color:var(--accent);">جاري التحميل...</span>
+                    <span id="dl-progress-count"></span>
+                </div>
+                <div style="background:rgba(255,255,255,0.1);border-radius:4px;height:6px;overflow:hidden;">
+                    <div id="dl-progress-bar"
+                        style="background:var(--accent);height:100%;width:0%;transition:width 0.3s;border-radius:4px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="main-audio"></audio>
+    <!-- Offline audio map (generated by quran_downloader.py) -->
+    <script>
+        // Load offline map if available (created by Python downloader)
+        (function () {
+            const s = document.createElement('script');
+            s.src = 'js/offline_audio_map.js';
+            s.onerror = () => console.info('No offline audio map found (run quran_downloader.py to create one)');
+            document.head.appendChild(s);
+        })();
+    </script>
+    <script src="js/core.js"></script>
+    <script src="js/audio-logic.js"></script>
+    <script>
+        // ===== OFFLINE =====
+        function updateOnlineStatus() {
+            document.getElementById('offline-banner').style.display = navigator.onLine ? 'none' : 'flex';
+        }
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        updateOnlineStatus();
+
+        // ===== KAABA SLIDESHOW =====
+        const kabbaImages = [
+            "img kabba/Kaaba masjid Al haram.jfif",
+            "img kabba/Masjid Al Haram Great Mosque Of Mecca Sacred….jfif",
+            "img kabba/Mosque night scene.jfif",
+            "img kabba/download (1).jfif",
+            "img kabba/تنزيل (1).jfif",
+            "img kabba/هل ترغب برؤية أروع مكان لملايين المسلمين حول….jfif"
+        ];
+        let bgIndex = 0;
+        const bgContainer = document.getElementById('spiritual-bg-container');
+
+        kabbaImages.forEach((src, i) => {
+            const slide = document.createElement('div');
+            slide.className = 'bg-slide' + (i === 0 ? ' active' : '');
+            slide.style.backgroundImage = `url('${src}')`;
+            bgContainer.appendChild(slide);
+        });
+        const bgSlides = bgContainer.querySelectorAll('.bg-slide');
+
+        // Called by audio-logic.js on each ayah change
+        function rotateBgOnAyah(ayahIndex) {
+            const newIdx = ayahIndex % kabbaImages.length;
+            if (newIdx === bgIndex) return;
+
+            bgSlides[bgIndex].classList.remove('active');
+            bgIndex = newIdx;
+            bgSlides[bgIndex].classList.add('active');
+
+            const newSrc = kabbaImages[bgIndex];
+
+            // Rotate album art image
+            const albumImg = document.getElementById('spiritual-album-img');
+            if (albumImg) {
+                albumImg.style.opacity = '0';
+                setTimeout(() => {
+                    albumImg.src = newSrc;
+                    albumImg.style.opacity = '1';
+                }, 600);
+            }
+
+            // Update fullscreen if open
+            const fsImg = document.getElementById('fs-img');
+            if (fsImg && document.getElementById('fullscreen-viewer').classList.contains('active')) {
+                fsImg.style.opacity = '0';
+                setTimeout(() => {
+                    fsImg.src = newSrc;
+                    document.getElementById('fs-bg').style.backgroundImage = `url('${newSrc}')`;
+                    fsImg.style.opacity = '1';
+                }, 600);
+            }
+        }
+
+        // Slideshow timer: 30 seconds — slow enough not to distract from reading
+        let slideshowTimer = setInterval(() => rotateBgOnAyah((bgIndex + 1) % kabbaImages.length), 30000);
+
+        // ===== FULLSCREEN VIEWER =====
+        function openFullscreenViewer() {
+            const currentSrc = document.getElementById('spiritual-album-img').src;
+            const viewer = document.getElementById('fullscreen-viewer');
+            const fsImg = document.getElementById('fs-img');
+            const fsBg = document.getElementById('fs-bg');
+
+            fsImg.src = currentSrc;
+            fsBg.style.backgroundImage = `url('${currentSrc}')`;
+
+            // Sync title
+            const surahName = document.getElementById('spiritual-surah-name')?.innerText || 'سورة';
+            document.getElementById('fs-surah-title').innerText = surahName;
+
+            // Sync current ayah text
+            const curAyah = document.getElementById('spiritual-ayah-text')?.innerText || '';
+            document.getElementById('fs-ayah-text').innerText = curAyah;
+
+            viewer.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeFullscreenViewer() {
+            document.getElementById('fullscreen-viewer').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function openFsTafsir() {
+            const overlay = document.getElementById('fs-tafsir-overlay');
+            const fsTafsirText = document.getElementById('fs-tafsir-text');
+            const srcText = document.getElementById('spiritual-tafsir-text')?.innerText || 'اختر سورة للاستماع';
+            fsTafsirText.innerText = srcText;
+            overlay.classList.add('active');
+        }
+
+        function closeFsTafsir() {
+            document.getElementById('fs-tafsir-overlay').classList.remove('active');
+        }
+
+        // Sync fullscreen progress bar
+        const mainAudioEl = document.getElementById('main-audio');
+        mainAudioEl.addEventListener('timeupdate', () => {
+            const pct = (mainAudioEl.currentTime / mainAudioEl.duration) * 100 || 0;
+
+            // Fullscreen progress
+            const fsPb = document.getElementById('fs-progress-bar');
+            if (fsPb) fsPb.style.width = `${pct}%`;
+
+            // Time displays
+            const fmt = t => { const m = Math.floor(t / 60), s = Math.floor(t % 60); return `${m}:${s < 10 ? '0' : ''}${s}`; };
+            const cur = fmt(mainAudioEl.currentTime || 0);
+            const dur = mainAudioEl.duration ? fmt(mainAudioEl.duration) : '0:00';
+
+            const fsCur = document.getElementById('fs-current-time');
+            const fsDur = document.getElementById('fs-duration-time');
+            const spCur = document.getElementById('spiritual-current-time');
+            const spDur = document.getElementById('spiritual-duration-time');
+            const barCur = document.getElementById('current-time');
+            const barDur = document.getElementById('duration-time');
+
+            if (fsCur) fsCur.innerText = cur;
+            if (fsDur) fsDur.innerText = dur;
+            if (spCur) spCur.innerText = cur;
+            if (spDur) spDur.innerText = dur;
+            if (barCur) barCur.innerText = cur;
+            if (barDur) barDur.innerText = dur;
+
+            // Sync fullscreen ayah text
+            const curAyah = document.getElementById('spiritual-ayah-text')?.innerText;
+            const fsAyah = document.getElementById('fs-ayah-text');
+            if (fsAyah && curAyah && fsAyah.innerText !== curAyah) {
+                fsAyah.innerText = curAyah;
+            }
+
+            // Update fullscreen play icon
+            const fsIcon = document.getElementById('fs-play-icon');
+            if (fsIcon) fsIcon.className = mainAudioEl.paused ? 'fa-solid fa-play' : 'fa-solid fa-pause';
+        });
+
+        function seekAudio(e, container) {
+            const rect = container.getBoundingClientRect();
+            const ratio = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
+            if (mainAudioEl && mainAudioEl.duration) mainAudioEl.currentTime = ratio * mainAudioEl.duration;
+        }
+
+        // ===== DOWNLOAD MODAL =====
+        const SURAH_NAMES_DL = [
+            "الفاتحة", "البقرة", "آل عمران", "النساء", "المائدة", "الأنعام", "الأعراف", "الأنفال", "التوبة", "يونس",
+            "هود", "يوسف", "الرعد", "إبراهيم", "الحجر", "النحل", "الإسراء", "الكهف", "مريم", "طه", "الأنبياء",
+            "الحج", "المؤمنون", "النور", "الفرقان", "الشعراء", "النمل", "القصص", "العنكبوت", "الروم", "لقمان",
+            "السجدة", "الأحزاب", "سبأ", "فاطر", "يس", "الصافات", "ص", "الزمر", "غافر", "فصلت", "الشورى",
+            "الزخرف", "الدخان", "الجاثية", "الأحقاف", "محمد", "الفتح", "الحجرات", "ق", "الذاريات", "الطور",
+            "النجم", "القمر", "الرحمن", "الواقعة", "الحديد", "المجادلة", "الحشر", "الممتحنة", "الصف", "الجمعة",
+            "المنافقون", "التغابن", "الطلاق", "التحريم", "الملك", "القلم", "الحاقة", "المعارج", "نوح", "الجن",
+            "المزمل", "المدثر", "القيامة", "الإنسان", "المرسلات", "النبأ", "النازعات", "عبس", "التكوير",
+            "الانفطار", "المطففين", "الانشقاق", "البروج", "الطارق", "الأعلى", "الغاشية", "الفجر", "البلد",
+            "الشمس", "الليل", "الضحى", "الشرح", "التين", "العلق", "القدر", "البينة", "الزلزلة", "العاديات",
+            "القارعة", "التكاثر", "العصر", "الهمزة", "الفيل", "قريش", "الماعون", "الكوثر", "الكافرون", "النصر",
+            "المسد", "الإخلاص", "الفلق", "الناس"
+        ];
+
+        const BUILT_IN_RECITERS = {
+            noreen: { baseUrl: 'https://archive.org/download/NoreenMohammadSiddiq/', pattern: n => `${String(n).padStart(3, '0')}.mp3` },
+            alzain: { baseUrl: 'https://archive.org/download/kquran.com__Alzain-Mohamed-Ahmad/kquran.com_', pattern: n => `${String(n).padStart(3, '0')}.mp3` },
+            alfateh: { baseUrl: 'https://archive.org/download/golmami2005_yahoo_002/', pattern: n => `${String(n).padStart(3, '0')}.mp3` }
+        };
+
+        let dlCurrentId = null;
+        let dlCurrentName = null;
+        let dlAbortController = null;
+
+        function openDownloadModal(reciterId, reciterName) {
+            dlCurrentId = reciterId;
+            dlCurrentName = reciterName;
+
+            document.getElementById('dl-modal-title').innerText = `تحميل: ${reciterName}`;
+            document.getElementById('dl-progress-section').style.display = 'none';
+            document.getElementById('dl-progress-bar').style.width = '0%';
+            document.getElementById('dl-btn-all').disabled = false;
+            document.getElementById('dl-btn-one').disabled = false;
+            document.getElementById('dl-btn-all').innerHTML = '<i class="fa-solid fa-book-quran"></i> تحميل القرآن كاملاً (114 سورة)';
+
+            // Populate surah dropdown
+            const sel = document.getElementById('dl-surah-select');
+            sel.innerHTML = '';
+            SURAH_NAMES_DL.forEach((name, i) => {
+                const opt = document.createElement('option');
+                opt.value = i + 1;
+                opt.textContent = `${i + 1}. سورة ${name}`;
+                sel.appendChild(opt);
+            });
+
+            const modal = document.getElementById('download-modal');
+            modal.style.display = 'flex';
+        }
+
+        function closeDownloadModal() {
+            document.getElementById('download-modal').style.display = 'none';
+            if (dlAbortController) dlAbortController.abort();
+        }
+
+        function getSurahUrl(reciterId, surahNum) {
+            if (BUILT_IN_RECITERS[reciterId]) {
+                const r = BUILT_IN_RECITERS[reciterId];
+                return r.baseUrl + r.pattern(surahNum);
+            }
+            return `https://cdn.islamic.network/quran/audio-surah/128/${reciterId}/${surahNum}.mp3`;
+        }
+
+        async function downloadAndSave(url, filename) {
+            const resp = await fetch(url, { signal: dlAbortController.signal });
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            const blob = await resp.blob();
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = filename;
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+        }
+
+        async function startDownloadOne() {
+            const surahNum = parseInt(document.getElementById('dl-surah-select').value);
+            const surahName = SURAH_NAMES_DL[surahNum - 1];
+            const url = getSurahUrl(dlCurrentId, surahNum);
+            const btn = document.getElementById('dl-btn-one');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التحميل...';
+            btn.disabled = true;
+            dlAbortController = new AbortController();
+            try {
+                await downloadAndSave(url, `${String(surahNum).padStart(3, '0')}_سورة_${surahName}.mp3`);
+                btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> تم التحميل';
+                btn.style.color = '#2ecc71';
+            } catch (e) {
+                btn.innerHTML = e.name === 'AbortError' ? '<i class="fa-solid fa-download"></i> تحميل السورة المختارة' : '<i class="fa-solid fa-triangle-exclamation"></i> فشل التحميل';
+            }
+            btn.disabled = false;
+        }
+
+        async function startDownloadAll() {
+            const btn = document.getElementById('dl-btn-all');
+            const prog = document.getElementById('dl-progress-section');
+            const progBar = document.getElementById('dl-progress-bar');
+            const progLabel = document.getElementById('dl-progress-label');
+            const progCount = document.getElementById('dl-progress-count');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التحميل...';
+            prog.style.display = 'block';
+            dlAbortController = new AbortController();
+
+            for (let i = 1; i <= 114; i++) {
+                progLabel.innerText = `سورة ${SURAH_NAMES_DL[i - 1]}`;
+                progCount.innerText = `${i}/114`;
+                progBar.style.width = `${(i / 114) * 100}%`;
+
+                try {
+                    const url = getSurahUrl(dlCurrentId, i);
+                    await downloadAndSave(url, `${String(i).padStart(3, '0')}_سورة_${SURAH_NAMES_DL[i - 1]}.mp3`);
+                    // Delay between downloads to avoid overwhelming the browser
+                    await new Promise(r => setTimeout(r, 800));
+                } catch (e) {
+                    if (e.name === 'AbortError') { progLabel.innerText = 'تم الإيقاف'; break; }
+                    // Continue on error
+                    progLabel.innerText = `فشل: سورة ${SURAH_NAMES_DL[i - 1]}، جاري المتابعة...`;
+                    await new Promise(r => setTimeout(r, 500));
+                }
+            }
+
+            progBar.style.width = '100%';
+            progLabel.innerText = 'اكتمل التحميل ✓';
+            btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> اكتمل التحميل';
+        }
+    </script>
+</body>
+
+</html>
